@@ -1,0 +1,10 @@
+[package]
+name = "hydromodels-interface"
+version = "0.1.0"
+authors = ["Andrew MacDonald <andrew@maccas.net>"]
+
+[dependencies]
+hydromodels = { path = "../hydro-models-rs" }
+
+[lib]
+crate-type = ["rlib", "dylib", "lib"]
