@@ -2,7 +2,8 @@ import numpy as np
 
 from cffi import FFI
 from hydromodels import _hydromodels_cffi
-
+import logging
+logger = logging.getLogger(__name__)
 
 class GR4J():
     __ffi = FFI()
