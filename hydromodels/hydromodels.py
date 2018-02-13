@@ -16,6 +16,8 @@ class GR4J():
             params['X4']
         )
 
+        self.__qsim_len = 0
+
     def run(self, precip, pet):
         assert len(precip) == len(pet)
         if precip.dtype != np.float64:
@@ -26,7 +28,7 @@ class GR4J():
             logger.warn("PET series not float64, conversion may result in copy")
             pet = pet.astype(np.float64, copy = False)
 
-        qsim = np.empty_like(precip, dtype=np.float64)
+        qsim = np.empty(len(precip) + self.__qsim_len, dtype=np.float64)
         qsim[:] = np.nan
 
         self.__lib.gr4j_run(
@@ -34,8 +36,11 @@ class GR4J():
             self.__ffi.cast('double *', precip.ctypes.data),
             self.__ffi.cast('double *', pet.ctypes.data),
             self.__ffi.cast('double *', qsim.ctypes.data),
-            self.__ffi.cast('int', len(precip))
+            self.__ffi.cast('int', len(precip)),
+            self.__ffi.cast('int', len(qsim))
         )
+
+        self.__qsim_len = len(qsim)
 
         return qsim
 
