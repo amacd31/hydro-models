@@ -1,7 +1,7 @@
 import numpy as np
 
 from cffi import FFI
-from hydromodels import _hydromodels_cffi
+from hydromodels import _hydromodels_cffi, owndata
 import logging
 logger = logging.getLogger(__name__)
 
@@ -31,16 +31,14 @@ class GR4J():
         qsim = np.empty(len(precip) + self.__qsim_len, dtype=np.float64)
         qsim[:] = np.nan
 
-        self.__lib.gr4j_run(
+        arr_ptr = self.__lib.gr4j_run(
             self.__ptr,
             self.__ffi.cast('double *', precip.ctypes.data),
             self.__ffi.cast('double *', pet.ctypes.data),
-            self.__ffi.cast('double *', qsim.ctypes.data),
             self.__ffi.cast('int', len(precip)),
-            self.__ffi.cast('int', len(qsim))
         )
-
-        self.__qsim_len = len(qsim)
+        int_ptr = int(self.__ffi.cast("intptr_t", arr_ptr))
+        qsim = owndata.take_ownership(int_ptr, len(precip))
 
         return qsim
 
